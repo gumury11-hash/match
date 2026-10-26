@@ -190,6 +190,7 @@
             width: 100%;
             height: 100%;
             object-fit: fill;
+            filter: saturate(0.88) contrast(1.06) brightness(1.03);
         }
         .card-front svg,
         .card-back svg {
@@ -483,6 +484,22 @@
         #stats-btn:hover, .stats-close:hover { filter: brightness(.96); }
         @media (max-width: 700px) {
             .stats-dialog { padding: 20px; border-radius: 18px; }
+        }
+        @media (max-width: 700px) and (orientation: portrait) {
+            body { padding: 8px 6px 12px; }
+            h1 { margin-bottom: 8px; font-size: 1.35rem; }
+            .main-container { gap: 8px; }
+            .game-section { padding: 9px; }
+            .difficulty-control { margin-bottom: 8px; }
+            .info-panel { margin-bottom: 8px; padding: 7px 8px; line-height: 1.45; }
+            .game-board {
+                grid-template-columns: repeat(min(var(--mobile-columns, 6), 7), minmax(0, 1fr));
+                gap: 3px;
+                padding: 5px;
+                border-radius: 10px;
+            }
+            .card { border-radius: 5px; }
+            .card-front, .card-back { border-width: 1px; border-radius: 4px; }
         }
     </style>
 </head>
@@ -790,6 +807,19 @@
             const imageIndex = ((cardData.month - 1) * 4) + cardData.cardInMonth;
             const frontImage = HWA_CARD_IMAGES[imageIndex];
             const back = `
+                <svg viewBox="0 0 200 300" role="img" aria-label="화투 카드 뒷면">
+                    <rect x="4" y="4" width="192" height="292" rx="12" fill="#fffdf0" stroke="#b8860b" stroke-width="4"/>
+                    <rect x="14" y="14" width="172" height="272" rx="8" fill="#bd2026" stroke="#7f1017" stroke-width="3"/>
+                    <path d="M24 24h152v252H24z" fill="none" stroke="#e9584d" stroke-width="2" opacity=".65"/>
+                    <g fill="#a81820" opacity=".5">
+                        <path d="M100 56 116 72 100 88 84 72zM100 212 116 228 100 244 84 228z"/>
+                        <path d="M54 134 70 150 54 166 38 150zM146 134 162 150 146 166 130 150z"/>
+                    </g>
+                    <circle cx="100" cy="150" r="24" fill="#d93b35" stroke="#f2c769" stroke-width="3"/>
+                    <path d="M100 135 105 145 116 150 105 155 100 165 95 155 84 150 95 145z" fill="#f7d977"/>
+                </svg>
+            `;
+            /* const back = `
                 <svg viewBox="0 0 200 300" aria-label="화투 뒷면">
                     <defs>
                         <linearGradient id="back-gradient" x1="0" y1="0" x2="1" y2="1">
@@ -810,7 +840,7 @@
                         <circle cx="140" cy="240" r="6"/>
                     </g>
                 </svg>
-            `;
+            `; */
 
             return {
                 front: `<img class="card-face sprite-face" src="${frontImage}" alt="">`,
@@ -836,6 +866,8 @@
             updateRankingsUI();
             const board = document.getElementById('game-board');
             board.innerHTML = '';
+            const mobileColumns = selectedSets <= 4 ? 4 : selectedSets <= 6 ? 6 : 8;
+            board.style.setProperty('--mobile-columns', mobileColumns);
             flippedCards = [];
             matchedPairs = 0;
             fails = 0;
